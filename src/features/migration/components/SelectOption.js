@@ -4,6 +4,7 @@ import { createAction } from '@reduxjs/toolkit';
 
 import { Select, MenuItem } from '@material-ui/core';
 
+
 class SelectOption extends React.Component {
 
   constructor(props) {
@@ -32,9 +33,9 @@ class SelectOption extends React.Component {
    }
 
   createList(){
-    return this.options.map((element) => {
+    return this.options.map((element, index) => {
       return (
-        <MenuItem key = {element} value = {element}> {element} </MenuItem>
+        <MenuItem key = {index} value = {element}> {element} </MenuItem>
       );
     });
   }
@@ -45,7 +46,7 @@ class SelectOption extends React.Component {
       <label>
         {this.name}
         <Select
-          style={{ margin: "2px", padding: "0px 20px" }}
+          style={{ margin: "2vh", padding: "1vh 2vh 0vh 1vh" }}
           labelId={this.name}
           id={this.name}
           value={this.option}
@@ -59,7 +60,7 @@ class SelectOption extends React.Component {
 }
 
 const dispatchMapToAction = {
-  update: createAction("set_metadata_select_option")
+  update: createAction("select_schema_table")
 };
 
 

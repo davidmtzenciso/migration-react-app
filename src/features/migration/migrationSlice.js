@@ -4,18 +4,18 @@ export const migrationSlice = createSlice({
   name: 'migration',
   initialState: {
     metadata: {
-      dbNames: null,
-      tableNames: {
-        xprod: null,
-        cost: null
-      },
+      pods: [],
+      schemas: [{
+        name: null,
+        tables: []
+      }],
       sqlOpNames: null
     },
     tables:[{
       name: "",
       columns:[{
         name: "",
-        values:[]
+        values: []
       }]
     }],
     request: {
@@ -46,7 +46,7 @@ export const migrationSlice = createSlice({
     tables: state => {
       return state;
     },
-    set_metadata_select_option: (state, action) => {
+    select_schema_table: (state, action) => {
       console.log("set " + action.payload.key + "--------");
       switch(action.payload.key) {
         case "xprod":

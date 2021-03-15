@@ -1,31 +1,60 @@
 import React from 'react';
-import SelectOption from './SelectOption';
-import { Box } from '@material-ui/core';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
+
+import { Box, Grid, Paper } from '@material-ui/core';
+import { withStyles } from "@material-ui/core/styles";
+import { styles } from './styles';
+
+import SelectOption from './SelectOption';
+
 
 class SelectBox extends React.Component {
 
   constructor(props) {
     super(props);
-    this.name1 = props.params.select1.name;
-    this.name2 = props.params.select2.name;
-    this.data1 = props.params.select1.data;
-    this.data2 = props.params.select2.data;
-
     console.log("SELECT BOX-----");
+    this.pods = this.props.metadata.pods;
+    this.schemas = this.props.metadata.schemas;
   }
-
 
   render() {
     return (
-        <Box className={this.props.classes.box} component="span">
-          <label>{this.props.label} </label>
-          <SelectOption name = {this.name1} options={this.data1} />
-          <SelectOption name = {this.name2} options={this.data2} />
-        </Box>
+      <Grid key = "envs" container spacing={1} className={this.props.classes.container}>
+
+       <Grid item xs='6' >
+        <Paper className={this.props.classes.paper} elevation={2} >
+          <Box className={this.props.classes.box} component="span" >
+            <SelectOption name = "from:" options={this.pods} />
+            <SelectOption name = {this.schemas[0].name} options={this.schemas[0].tables} />
+            <SelectOption name = {this.schemas[1].name} options={this.schemas[1].tables} />
+          </Box>
+        </Paper>
+       </Grid>
+
+       <Grid item xs='6' >
+        <Paper className={this.props.classes.paper}>
+          <Box className={this.props.classes.box} component="span">
+            <SelectOption name = "from:" options={this.pods} />
+            <SelectOption name = {this.schemas[0].name} options={this.schemas[0].tables} />
+            <SelectOption name = {this.schemas[1].name} options={this.schemas[1].tables} />
+          </Box>
+        </Paper>
+       </Grid>
+
+      </Grid>
     );
   }
 
 }
 
-export default connect()(SelectBox);
+const mapStateToProps = state => {
+  return {
+    metadata: state.migration.metadata
+  };
+};
+
+export default compose(
+  connect(mapStateToProps),
+  withStyles(styles),
+)(SelectBox);

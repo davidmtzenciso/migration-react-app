@@ -1,3 +1,4 @@
+
 export const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -5,13 +6,20 @@ export const styles = theme => ({
     height: 'auto',
   },
   box: {
-    padding: theme.spacing(4),
     textAlign: 'center',
-    color: theme.palette.text.secondary,
+    color: theme.palette.text.primary,
   },
   paper: {
-    padding: theme.spacing(4),
+    padding: theme.spacing(2),
     textAlign: 'center',
-    color: theme.palette.text.secondary,
+    color: theme.palette.text.primary,
+  },
+  field: {
+    padding: theme.spacing(1),
+    color: theme.palette.text.primary,
+  },
+  container: {
+    height: '15vh',
+    padding: theme.spacing(2),
   }
 });
