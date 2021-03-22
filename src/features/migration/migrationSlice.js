@@ -11,16 +11,26 @@ export const migrationSlice = createSlice({
       }],
       sqlOpNames: null
     },
-    tables:[{
-      name: "",
+    dataFrom:[{
+      pod: "",
+      schema: "",
+      tableName: "",
+      columns:[{
+        name: "",
+        values: []
+      }]
+    }],
+    dataTo:[{
+      pod: "",
+      schema: "",
+      tableName: "",
       columns:[{
         name: "",
         values: []
       }]
     }],
     request: {
-      source: "",
-      destination: "",
+      pod: "dev5",
       sqlStmts:[{
         schema: "",
         tableName: "",
@@ -35,9 +45,8 @@ export const migrationSlice = createSlice({
             value: ""
           }]
         }]
-      }],
-    }
-  },
+      }]
+    },
   reducers: {
     set_metadata: (state, action) => {
       console.log("set metadata action------");
@@ -46,7 +55,7 @@ export const migrationSlice = createSlice({
     tables: state => {
       return state;
     },
-    select_schema_table: (state, action) => {
+    select_pod_n_table: (state, action) => {
       console.log("set " + action.payload.key + "--------");
       switch(action.payload.key) {
         case "xprod":
@@ -54,11 +63,11 @@ export const migrationSlice = createSlice({
           state.request.schema = action.payload.key;
           state.request.tableName = action.payload.data;
           break;
-        case "source":
+        case "from":
           state.request.source = action.payload.data;
           break;
         case "destination":
-          state.request.destination = action.payload.data;
+          state.request.to = action.payload.data;
           break;
         default:
 
@@ -68,5 +77,5 @@ export const migrationSlice = createSlice({
   }
 });
 
-export const { set_metadata } = migrationSlice.actions;
+export const { set_metadata, select_pod_n_table } = migrationSlice.actions;
 export default migrationSlice.reducer;

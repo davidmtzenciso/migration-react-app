@@ -40,7 +40,7 @@ class DataTable extends React.Component {
                   <TableCell align="right">PRECEDENCE</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
+              <TableBody key = {this.props.pod}>
                 {this.createRows().map((row) => (
                   <TableRow key={row.name}>
                     <TableCell component="th" scope="row">
@@ -61,7 +61,7 @@ class DataTable extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    metadata: state.migration.metadata
+    request: state.migration.request
   };
 };
 

@@ -9,22 +9,21 @@ class SelectOption extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log("SelectOption ----");
-    console.log(props);
-
-    this.action = props.action;
     this.name = props.name;
     this.key = props.name.toLowerCase();
     this.options = props.options;
-    this.option = this.options[0];
-    console.log("options: " + this.options);
+
+    if(this.name === 'from') {
+      this.option = this.props.request.from.pod;
+    } else if (this.name === 'to') {
+      this.option = this.props.request.to.pod;
+    }
 
     this.handleChange = (event) => {
         this.props.update({
             key: this.key,
             value: event.target.value
         });
-        this.setOption(event.target.value);
     }
   }
 
@@ -32,10 +31,10 @@ class SelectOption extends React.Component {
      this.option = value;
    }
 
-  createList(){
-    return this.options.map((element, index) => {
+  createList() {
+    return this.options.map((element) => {
       return (
-        <MenuItem key = {index} value = {element}> {element} </MenuItem>
+        <MenuItem key = {this.name + "_" + element} value = {element}> {element} </MenuItem>
       );
     });
   }
@@ -48,8 +47,7 @@ class SelectOption extends React.Component {
         <Select
           style={{ margin: "2vh", padding: "1vh 2vh 0vh 1vh" }}
           labelId={this.name}
-          id={this.name}
-          value={this.option}
+          value={this.props.selected}
           onChange={this.handleChange}
         >
         {this.createList()}
@@ -59,9 +57,15 @@ class SelectOption extends React.Component {
   }
 }
 
+const mapStateToProps = state => {
+  return {
+    request: state.migration.request
+  };
+};
+
 const dispatchMapToAction = {
-  update: createAction("select_schema_table")
+  update: createAction("select_pod_n_table")
 };
 
 
-export default connect(null, dispatchMapToAction)(SelectOption);
+export default connect(mapStateToProps, dispatchMapToAction)(SelectOption);
