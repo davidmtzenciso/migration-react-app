@@ -13,6 +13,8 @@ import { Table, TableBody, TableCell, TableContainer,
 class DataTable extends React.Component {
   constructor(props) {
     super(props);
+    this.pod = this.props.pod;
+    this.pod = "not selected";
   }
 
   createData(name, calories, fat, carbs, protein) {
@@ -40,7 +42,7 @@ class DataTable extends React.Component {
                   <TableCell align="right">PRECEDENCE</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody key = {this.props.pod}>
+              <TableBody key = { this.pod}>
                 {this.createRows().map((row) => (
                   <TableRow key={row.name}>
                     <TableCell component="th" scope="row">

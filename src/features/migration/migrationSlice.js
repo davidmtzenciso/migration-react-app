@@ -29,8 +29,19 @@ export const migrationSlice = createSlice({
         values: []
       }]
     }],
+    noError: {
+      type: "no_problem",
+      message: "",
+      isFixed: true,
+    },
     request: {
-      pod: "dev5",
+      error: {
+        type: "no_problem",
+        message: "",
+        isFixed: true,
+      },
+      from: "dev5",
+      to: "prodqa",
       sqlStmts:[{
         schema: "",
         tableName: "",
@@ -46,36 +57,48 @@ export const migrationSlice = createSlice({
           }]
         }]
       }]
-    },
+    }
+  },
   reducers: {
     set_metadata: (state, action) => {
-      console.log("set metadata action------");
+      console.log("set_metadata------");
       state.metadata = action.payload;
     },
     tables: state => {
       return state;
     },
     select_pod_n_table: (state, action) => {
-      console.log("set " + action.payload.key + "--------");
       switch(action.payload.key) {
         case "xprod":
         case "cost":
           state.request.schema = action.payload.key;
-          state.request.tableName = action.payload.data;
+          state.request.tableName = action.payload.value;
           break;
         case "from":
-          state.request.source = action.payload.data;
+          state.request.from = action.payload.value;
           break;
-        case "destination":
-          state.request.to = action.payload.data;
+        case "to":
+          state.request.to = action.payload.value;
           break;
-        default:
-
+          default:
+          console.log("error in select_pod_n_table reducer, no case for option: " + action.payload.key);
       }
-      return state;
-    }
-  }
-});
+    },
+    evaluate_duplicated_pod: (state, action) => {
+      console.log("evaluate_duplicated_pod --------");
+        if(state.request.from === state.request.to) {
+            state.request.error = {
+              key: action.payload.value,
+              message: "'From' and 'To' cannot be the same pod",
+              isFixed: false
+            };
+        }
+        else {
+          state.request.error = state.noError;
+        }
+        
+    },
+  }});
 
-export const { set_metadata, select_pod_n_table } = migrationSlice.actions;
+export const { set_metadata, select_pod_n_table, evaluate_duplicated_pod } = migrationSlice.actions;
 export default migrationSlice.reducer;

@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createAction } from '@reduxjs/toolkit';
 
-import { Grid, Paper, FormControlLabel, withStyles} from '@material-ui/core';
+import { Grid, Paper, Box, Snackbar, withStyles} from '@material-ui/core';
+import MuiAlert from '@material-ui/lab/Alert';
 import { styles } from './styles';
 
 import SelectOption from './SelectOption';
@@ -12,6 +13,8 @@ import DataTable from './DataTable';
 class Migration extends React.Component {
   constructor(props) {
     super(props);
+    this.wrapper = React.createRef();
+
     this.props.set_metadata({
          pods: ["dev5", "implsb1", "imptstsb1", "prodqa"],
          schemas:[{
@@ -24,28 +27,40 @@ class Migration extends React.Component {
           }],
           sqlOpNames: ["INSERT", "UPDATE", "DELETE"]
       });
-      this.isBlue = true;
+
+      this.handleClose = (event) => {
+        this.props.updateSelection({
+          key: this.componentName,
+          value = ""
+        });
+        this.props.evaluateDuplicatedPod({value: this.componentName})
+      }
   }
+
+  setOpenErrorFeedback(error) {
+    this.open = !error.isFixed;
+    this.reason = error.message;
+    this.componentName = error.key;
+  }
+
 
   handleSubmit() {}
 
-  setIsBlue(event) {
-    this.isBlue = event.target.value;
-  }
-
-
   render() {
-    if (this.props.metadata.pods) {
+    if (this.props.metadata.schemas.length > 1) {
+      this.setOpenErrorFeedback(this.props.request.error);
         return (
-          <div className={this.props.classes.root}>
+          <div ref={this.wrapper} className={this.props.classes.root}>
 
-          <Grid item xs={12} >
-           <Paper className={this.props.classes.paper} elevation={2} >
-             <Box className={this.props.classes.box} component="span">
-               <SelectOption name = "from" options={this.metadata.pods} />
-               <SelectOption name = "to" options={this.metadata.pods} />
-               <SelectOption name = {"from_" + this.metadata.schemas[0].name}
-                             options={this.metadata.schemas[0].tables}/>
+          <Grid item xs={10} >
+           <Paper className = {this.props.classes.paper} elevation={2} >
+             <Box className = {this.props.classes.box} component="span">
+               <SelectOption name = "from" options={this.props.metadata.pods} />
+               <SelectOption name = "to" options={this.props.metadata.pods} />
+               <SelectOption name = {this.props.metadata.schemas[0].name}
+                             options = {this.props.metadata.schemas[0].tables}/>
+               <SelectOption name = {this.props.metadata.schemas[1].name}
+                             options = {this.props.metadata.schemas[1].tables}/>
              </Box>
            </Paper>
           </Grid>
@@ -62,8 +77,15 @@ class Migration extends React.Component {
                 </Paper>
               </Grid>
             </Grid>
+
+            <Snackbar open={this.open} autoHideDuration={3000} onClose={this.handleClose}>
+              <MuiAlert elevation={6} onClose={this.handleClose} variant="filled"  severity="error">
+                {this.reason}
+              </MuiAlert>
+            </Snackbar>
         </div>
         );
+
       }
       return null;
     }
@@ -72,12 +94,18 @@ class Migration extends React.Component {
 const mapStateToProps = state => {
   return {
     metadata: state.migration.metadata,
-    data: state.migration.data
+    dataFrom: state.migration.dataFrom,
+    dataTo: state.migration.dataTo,
+    noError: state.migration.noError,
+    request: state.migration.request
   };
 };
 
 const dispatchMapToAction = {
   set_metadata: createAction("migration/set_metadata"),
+  evaluateDuplicatedPod: createAction("migration/evaluate_duplicated_pod"),
+  updateSelection: createAction("migration/select_pod_n_table"),
+
 };
 
 export default compose(
