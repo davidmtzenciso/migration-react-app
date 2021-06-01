@@ -18,24 +18,12 @@ class SelectOption extends React.Component {
     this.setOption();
 
     this.handleChange = (event) => {
-
-        this.props.updateSelection({
-            key: event.target.name,
+        this.props.selectPodOrTable({
+            key: this.name,
             value: event.target.value
         });
-
-        if(this.isPodRelated()) {
-          this.props.evaluateDuplicatedPod({value: this.name});
-
-          if(this.request.error.isFixed) {
-            this.option = event.target.value;
-          }
-        }
       }
-    }
-
-    isPodRelated() {
-      return this.name === 'from' || this.name === 'to';
+      this.props.evaluateDuplicatedPod({componentName: this.name});
     }
 
    setOption() {
@@ -57,11 +45,11 @@ class SelectOption extends React.Component {
   }
 
   render() {
-    return (
+      return (
         <FormControl ref={this.wrapper}>
           <InputLabel id={this.name}>{this.name}</InputLabel>
           <Select
-            name = {this.name}
+            name = {this.name + "_"}
             style={{ margin: "2vh", padding: "1vh 2vh 0vh 1vh" }}
             labelId={this.name}
             value={this.option}
@@ -81,7 +69,7 @@ const mapStateToProps = state => {
 };
 
 const dispatchMapToAction = {
-  updateSelection: createAction("migration/select_pod_n_table"),
+  selectPodOrTable: createAction("migration/select_pod_or_table"),
   evaluateDuplicatedPod: createAction("migration/evaluate_duplicated_pod")
 };
 

@@ -9,46 +9,35 @@ import { styles } from './styles';
 
 import SelectOption from './SelectOption';
 import DataTable from './DataTable';
+import { get_metadata } from '.././migrationSlice';
 
 class Migration extends React.Component {
   constructor(props) {
     super(props);
     this.wrapper = React.createRef();
+    this.pods = this.props.metadata.pods;
+    this.componentName = this.props.request.error.componentName;
+    this.open = this.props.request.error.isNotFixed;
+    this.message = this.props.request.error.message;
 
-    this.props.set_metadata({
-         pods: ["dev5", "implsb1", "imptstsb1", "prodqa"],
-         schemas:[{
-            name: "xproduct",
-            tables: ["client_confgr", "client", "client_tier_config"]
-          },
-          {
-            name: "cost",
-            tables: ["encounter", "client_parsing_rules", "service_type_code_override"]
-          }],
-          sqlOpNames: ["INSERT", "UPDATE", "DELETE"]
+    this.handleClose = (event) => {
+      console.log("component with error: " + this.componentName)
+      this.props.selectPodOrTable({
+        key: this.componentName,
+        value: "not_selected"
       });
+      this.props.evaluateDuplicatedPod({componentName: this.componentName})
+    }
 
-      this.handleClose = (event) => {
-        this.props.updateSelection({
-          key: this.componentName,
-          value = ""
-        });
-        this.props.evaluateDuplicatedPod({value: this.componentName})
-      }
+    this.props.getMetadata();
   }
-
-  setOpenErrorFeedback(error) {
-    this.open = !error.isFixed;
-    this.reason = error.message;
-    this.componentName = error.key;
-  }
-
 
   handleSubmit() {}
 
+  componentDidMount(){}
+
   render() {
     if (this.props.metadata.schemas.length > 1) {
-      this.setOpenErrorFeedback(this.props.request.error);
         return (
           <div ref={this.wrapper} className={this.props.classes.root}>
 
@@ -68,19 +57,19 @@ class Migration extends React.Component {
             <Grid key = "tables_container" container spacing={1}>
               <Grid key="tables_from" item xs={6}>
                 <Paper className={this.props.classes.paper}>
-                <DataTable pod={this.props.dataFrom.pod} name={this.props.dataFrom.tableName}/>
+                <DataTable name = "data_from"/>
                 </Paper>
               </Grid>
               <Grid key="tables_to" item xs={6}>
                 <Paper className={this.props.classes.paper}>
-                <DataTable pod={this.props.dataTo.pod} name={this.props.dataTo.tableName}/>
+                <DataTable name = "data_to"/>
                 </Paper>
               </Grid>
             </Grid>
 
             <Snackbar open={this.open} autoHideDuration={3000} onClose={this.handleClose}>
               <MuiAlert elevation={6} onClose={this.handleClose} variant="filled"  severity="error">
-                {this.reason}
+                {this.message}
               </MuiAlert>
             </Snackbar>
         </div>
@@ -102,10 +91,9 @@ const mapStateToProps = state => {
 };
 
 const dispatchMapToAction = {
-  set_metadata: createAction("migration/set_metadata"),
   evaluateDuplicatedPod: createAction("migration/evaluate_duplicated_pod"),
-  updateSelection: createAction("migration/select_pod_n_table"),
-
+  selectPodOrTable: createAction("migration/select_pod_or_table"),
+  getMetadata: get_metadata
 };
 
 export default compose(

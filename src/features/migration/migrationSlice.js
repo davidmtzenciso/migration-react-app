@@ -1,73 +1,18 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk  } from '@reduxjs/toolkit';
+import { fetch_metadata } from './api';
+import { initState } from './initState';
+export const get_metadata = createAsyncThunk("migration/get-metadata", async (payload, { dispatch }) => {
+  const response = await fetch_metadata()
+  return response;
+});
+
 
 export const migrationSlice = createSlice({
   name: 'migration',
-  initialState: {
-    metadata: {
-      pods: [],
-      schemas: [{
-        name: null,
-        tables: []
-      }],
-      sqlOpNames: null
-    },
-    dataFrom:[{
-      pod: "",
-      schema: "",
-      tableName: "",
-      columns:[{
-        name: "",
-        values: []
-      }]
-    }],
-    dataTo:[{
-      pod: "",
-      schema: "",
-      tableName: "",
-      columns:[{
-        name: "",
-        values: []
-      }]
-    }],
-    noError: {
-      type: "no_problem",
-      message: "",
-      isFixed: true,
-    },
-    request: {
-      error: {
-        type: "no_problem",
-        message: "",
-        isFixed: true,
-      },
-      from: "dev5",
-      to: "prodqa",
-      sqlStmts:[{
-        schema: "",
-        tableName: "",
-        sqlOp: [{
-          opName: "",
-          findArgs: [{
-            columnName: "",
-            value: ""
-          }],
-          newData:[{
-            columnName: "",
-            value: ""
-          }]
-        }]
-      }]
-    }
-  },
+  initialState: initState,
   reducers: {
-    set_metadata: (state, action) => {
-      console.log("set_metadata------");
-      state.metadata = action.payload;
-    },
-    tables: state => {
-      return state;
-    },
-    select_pod_n_table: (state, action) => {
+    select_pod_or_table: (state, action) => {
+      console.log("select_pod_or_table: " + action.payload.key + ":" + action.payload.value);
       switch(action.payload.key) {
         case "xprod":
         case "cost":
@@ -78,27 +23,41 @@ export const migrationSlice = createSlice({
           state.request.from = action.payload.value;
           break;
         case "to":
+        console.log("enter case 'to'");
           state.request.to = action.payload.value;
           break;
-          default:
+        default:
           console.log("error in select_pod_n_table reducer, no case for option: " + action.payload.key);
       }
     },
     evaluate_duplicated_pod: (state, action) => {
-      console.log("evaluate_duplicated_pod --------");
+      console.log("evaluate duplicated_pod-------- " + action.payload.componentName);
         if(state.request.from === state.request.to) {
+            console.log("it is duplicated!");
             state.request.error = {
-              key: action.payload.value,
+              componentName: action.payload.componentName,
+              type: "duplicated_pod",
               message: "'From' and 'To' cannot be the same pod",
-              isFixed: false
+              isNotFixed: true
             };
         }
         else {
+          console.log("no error---------");
           state.request.error = state.noError;
         }
-        
+    }
+  },
+  extraReducers: {
+    [get_metadata.fulfilled]: (state, action) => {
+      state.metadata = action.payload
     },
-  }});
+    [get_metadata.rejected]: (state, action) => {
+      console.log("metadata error: " + action.error.message);
+      state.ApiError.message = action.error.message
+    }
+  }
+});
 
-export const { set_metadata, select_pod_n_table, evaluate_duplicated_pod } = migrationSlice.actions;
+
+export const { select_pod_n_table, evaluate_duplicated_pod } = migrationSlice.actions;
 export default migrationSlice.reducer;

@@ -1,9 +1,8 @@
-const metadataURL = "http://healthsparq.com/migration/metadata";
+const metadataURL = "http://localhost:8000/metadata/";
 
 
 
-const get_metadata = (url, onSuccess, onError) => {
-  fetch(url)
-      .then(res => res.json())
-      .then(onSuccess, onError)
-};
+export const fetch_metadata = () => {
+  return fetch(metadataURL, {method: "GET"})
+        .then(res => res.json());
+}

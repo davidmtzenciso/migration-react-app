@@ -7,7 +7,6 @@ import { AppBar, IconButton, Button, Typography, Toolbar, withStyles } from '@ma
 import MenuIcon from '@material-ui/icons/Menu';
 import { styles } from './styles';
 
-
 class App extends React.Component {
 
   render() {
