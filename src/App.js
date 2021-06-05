@@ -3,7 +3,8 @@ import Migration from './features/migration/components/Migration';
 import store from './app/store';
 import { Provider } from 'react-redux';
 import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { AppBar, IconButton, Button, Typography, Toolbar, withStyles } from '@material-ui/core';
+import { AppBar, IconButton, Button, Typography, Toolbar } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import { styles } from './styles';
 
@@ -16,7 +17,7 @@ class App extends React.Component {
     return (
       <Router>
         <div ref={this.nodeRef}>
-          <AppBar nodeRef={this.nodeRef} position="static">
+          <AppBar noderef={this.nodeRef} position="static">
             <Toolbar>
               <IconButton edge="start" className={this.props.classes.menuButton} color="inherit" aria-label="menu">
                 <MenuIcon />

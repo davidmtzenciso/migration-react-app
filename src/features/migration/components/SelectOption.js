@@ -2,15 +2,14 @@ import React from 'react'
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createAction } from '@reduxjs/toolkit';
-import { FormControl, InputLabel, Select, MenuItem, withStyles } from '@material-ui/core';
-
+import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import { styles } from './styles';
 
 class SelectOption extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log("select option creation.......");
     this.nodeRef = React.createRef();
     this.metadata = props.metadata;
 
@@ -48,7 +47,7 @@ class SelectOption extends React.Component {
   render() {
       this.setOption();
       return (
-          <FormControl nodeRef={this.nodeRef}>
+          <FormControl noderef={this.nodeRef}>
             <InputLabel id={this.props.name}>{this.props.name}</InputLabel>
             <Select
               name = {this.props.name + "_"}

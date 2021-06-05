@@ -7,30 +7,14 @@ import PropTypes from 'prop-types';
 
 import { Table, TableBody, TableCell, TableContainer, TableHead,
          TableRow, TablePagination, TableSortLabel, Toolbar, Typography,
-         Checkbox, IconButton, Tooltip, FormControlLabel, Grid, Paper, withStyles
+         Checkbox, IconButton, Tooltip, FormControlLabel, Grid, Paper
       }  from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 
-class DataTable extends React.Component {
 
-  constructor(props) {
-    super(props);
-    console.log("datatable creation----");
-    this.wrapper = React.createRef();
-    this.request = this.props.request;
-    this.metadata = this.props.metadata;
-    console.log("datatable.........................");
-    this.name = this.props.name;
-    this.rows = []
-    this.order = "asc";
-    this.orderBy = "";
-    this.selected = [];
-    this.page = 0;
-    this.rowsPerPage = 10;
 
-    this.setData();
-    this.headCells = this.createHeadCells();
-    this.createHandlers();
-    this.propTypes = {
+const propTypes = () => {
+ return {
      classes: PropTypes.object.isRequired,
      numSelected: PropTypes.number.isRequired,
      onRequestSort: PropTypes.func.isRequired,
@@ -38,8 +22,24 @@ class DataTable extends React.Component {
      order: PropTypes.oneOf(['asc', 'desc']).isRequired,
      orderBy: PropTypes.string.isRequired,
      rowCount: PropTypes.number.isRequired,
-    }
+   };
+}
 
+class DataTable extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.wrapper = React.createRef();
+    this.request = this.props.request;
+    this.metadata = this.props.metadata;
+    this.name = this.props.name;
+    this.rows = []
+    this.order = "asc";
+    this.orderBy = "";
+    this.selected = [];
+    this.page = 0;
+    this.rowsPerPage = 10;
+    this.createHandlers();
   }
 
   setData() {
@@ -134,36 +134,41 @@ class DataTable extends React.Component {
 
   createHeadCells() {
     //{ id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)' },
-
-    const schema_meta = this.metadata.schemas.find(schema => this.schema.name === this.request.schema);
-    const table_meta = schema_meta.tables.find(table => table.name === this.request.tableName);
-
-    return table_meta.map(meta => {
+    const schema = this.props.metadata.schemas[this.props.request.schema];
+    const table_meta = schema[this.props.request.tableName];
+    console.log("table_meta: " + table_meta);
+    return table_meta.map(column => {
         return {
-          key: meta.name, label: meta.name,  numeric: false
+          id: this.props.name + column, label: column,  numeric: false
         }
     });
   }
 
+  createRows() {
+    return [{
+      table_name: "client_confgr", client_confgr_id: "1", client_id:"1234", product_id:"HEALTHSPARQ", confgr_key: "promo_box_1"
+    }];
+  }
+
 
   render() {
-    console.log("building table");
+    this.setData();
     return (
-          <TableContainer spacing={1} component={Paper}>
-            <Table className={this.props.classes.table} aria-label="simple table">
+          <TableContainer component={Paper}>
+            <Table id={this.props.name} className={this.props.classes.table} aria-label="simple table">
               <TableHead>
-                <TableRow>
-                  {this.headCells.map((headCell) => (
+                <TableRow key={this.props.name + "_heads"} >
+                  {this.createHeadCells().map((headCell) => (
                     <TableCell
                       key={headCell.id}
                       align={headCell.numeric ? 'right' : 'left'}
                       padding="checkbox"
                       sortDirection={this.orderBy === headCell.id ? this.order : false}
                     >
-                      <TableSortLabel
+                      <TableSortLabel key={this.props.name + "_sort_label"}
                         active={this.orderBy === headCell.id}
                         direction={this.orderBy === headCell.id ? this.order : 'asc'}
-                        onClick={this.createSortHandler(headCell.id)}
+                        onClick={this.sortHandler(headCell.id)}
                       >
                         {headCell.label}
                         {this.orderBy === headCell.id ? (
@@ -172,7 +177,7 @@ class DataTable extends React.Component {
                           </span>
                         ) : null}
                       </TableSortLabel>
-                      <Checkbox
+                      <Checkbox key={this.props.name + "_checkbox"}
                         indeterminate={this.numSelected > 0 && this.numSelected < this.rowCount}
                         checked={this.rowCount > 0 && this.numSelected === this.rowCount}
                         onChange={this.onSelectAllClick}
@@ -183,15 +188,15 @@ class DataTable extends React.Component {
                 </TableRow>
               </TableHead>
               <TableBody key = { this.name + "_" + this.data.tableName }>
-                {this.createRows().map((row) => (
-                  <TableRow key = {row.name}>
+                { this.createRows().map((row, index) => (
+                  <TableRow key = {this.data.tableName + index}>
                     <TableCell component="th" scope="row">
-                      {row.name}
+                      {row.table_name}
                     </TableCell>
-                    <TableCell align="right">{row.calories}</TableCell>
-                    <TableCell align="right">{row.fat}</TableCell>
-                    <TableCell align="right">{row.carbs}</TableCell>
-                    <TableCell align="right">{row.protein}</TableCell>
+                    <TableCell align="right">{row.client_confgr_id}</TableCell>
+                    <TableCell align="right">{row.client_id}</TableCell>
+                    <TableCell align="right">{row.product_id}</TableCell>
+                    <TableCell align="right">{row.confgr_key}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -211,6 +216,7 @@ const mapStateToProps = state => {
 };
 
 const dispatchMapToAction = {
+
 };
 
 export default compose(

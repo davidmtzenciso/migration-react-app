@@ -1,4 +1,5 @@
 
+
 export const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -19,6 +20,5 @@ export const styles = theme => ({
   },
   container: {
     height: '15vh',
-    padding: theme.spacing(1),
   }
 });

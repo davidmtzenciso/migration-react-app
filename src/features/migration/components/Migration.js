@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createAction } from '@reduxjs/toolkit';
 
-import { MuiThemeProvider, Snackbar, Grid, Paper, Box, withStyles} from '@material-ui/core';
+import { MuiThemeProvider, Snackbar, Grid, GridList, Paper, Box } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import MuiAlert from '@material-ui/lab/Alert';
 import { styles } from './styles';
 
@@ -30,29 +31,26 @@ class Migration extends React.Component {
   render() {
     if (this.props.isLoaded) {
       return (
-        <MuiThemeProvider>
           <div ref={this.wrapper} className={this.props.classes.root}>
           <Grid item xs={12} >
-           <Paper nodeRef={this.wrapper} className={this.props.classes.paper} elevation={2} >
-             <Box nodeRef={this.wrapper} className={this.props.classes.box} component="span">
-              <SelectOption nodeRef={this.wrapper} name="from" options={this.props.metadata.pods}/>
-              <SelectOption nodeRef={this.wrapper} name="to" options={this.props.metadata.pods}/>
-              <SelectOption nodeRef={this.wrapper} name="xproduct" options={Object.keys(this.props.metadata.schemas["xproduct"])}/>
-              <SelectOption nodeRef={this.wrapper} name="cost" options={Object.keys(this.props.metadata.schemas["cost"])}/>
+           <Paper noderef={this.wrapper} className={this.props.classes.paper} elevation={2} >
+             <Box noderef={this.wrapper} className={this.props.classes.box} component="span">
+              <SelectOption noderef={this.wrapper} name="from" options={this.props.metadata.pods}/>
+              <SelectOption noderef={this.wrapper} name="to" options={this.props.metadata.pods}/>
+              <SelectOption noderef={this.wrapper} name="xproduct" options={Object.keys(this.props.metadata.schemas["xproduct"])}/>
+              <SelectOption noderef={this.wrapper} name="cost" options={Object.keys(this.props.metadata.schemas["cost"])}/>
              </Box>
            </Paper>
           </Grid>
-          <Grid key = "tables_container" container spacing={1}>
-          <Grid key="tables_from" item xs={6}>
+        <Grid key="tables_from" item xs={12}>
             <Paper className={this.props.classes.paper}>
-              <DataTable name = "data_from"/>
+              <DataTable noderef={this.wrapper} name = "data_from"/>
             </Paper>
           </Grid>
-          <Grid key="tables_to" item xs={6}>
+          <Grid key="tables_to" item xs={12}>
             <Paper className={this.props.classes.paper}>
-              <DataTable name = "data_to"/>
+              <DataTable noderef={this.wrapper} name = "data_to"/>
             </Paper>
-          </Grid>
         </Grid>
           <Snackbar open={this.props.request.error.isNotFixed} autoHideDuration={3000} >
             <MuiAlert elevation={6} variant="filled"  severity="error">
@@ -60,7 +58,6 @@ class Migration extends React.Component {
             </MuiAlert>
           </Snackbar>
         </div>
-      </MuiThemeProvider>
         );
      }
     else {
