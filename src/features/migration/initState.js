@@ -1,4 +1,5 @@
 export const initState = {
+  loaded: false,
   metadata: {
     pods: [],
     schemas: []
@@ -36,8 +37,8 @@ export const initState = {
     },
     from: "dev5",
     to: "prodqa",
-    schema: "",
-    tableName: "",
+    schema: "xproduct",
+    tableName: "client_confgr",
     ops:[{
       name: "",
       findArgs: [{

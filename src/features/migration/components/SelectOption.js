@@ -10,16 +10,14 @@ class SelectOption extends React.Component {
 
   constructor(props) {
     super(props);
-    this.wrapper = React.createRef();
-
-    this.name = props.name;
-    this.options = props.options;
+    console.log("select option creation.......");
+    this.nodeRef = React.createRef();
     this.request = props.request;
+    this.metadata = props.metadata;
     this.setOption();
-
     this.handleChange = (event) => {
         this.props.selectPodOrTable({
-            key: this.name,
+            key: this.props.name,
             value: event.target.value
         });
       }
@@ -27,44 +25,46 @@ class SelectOption extends React.Component {
     }
 
    setOption() {
-     if(this.name === 'from') {
+     if(this.props.name === 'from') {
        this.option = this.request.from;
-     } else if (this.name === 'to') {
+     } else if (this.props.name === 'to') {
        this.option = this.request.to;
+     } else if (this.props.name === this.request.schema) {
+       this.option = "client_confgr"
      } else {
-       this.option = this.options[0];
+       this.option = "_";
      }
   }
 
   createList() {
-    return this.options.map((element) => {
+    return this.props.options.map((element) => {
       return (
-        <MenuItem key = {this.name + "_" + element} value = {element}> {element} </MenuItem>
+        <MenuItem key = {this.props.name + "_" + element} value = {element}> {element} </MenuItem>
       );
     });
   }
 
   render() {
       return (
-        <FormControl ref={this.wrapper}>
-          <InputLabel id={this.name}>{this.name}</InputLabel>
-          <Select
-            name = {this.name + "_"}
-            style={{ margin: "2vh", padding: "1vh 2vh 0vh 1vh" }}
-            labelId={this.name}
-            value={this.option}
-            onChange={this.handleChange}
-          >
-            {this.createList()}
-          </Select>
-        </FormControl>
+          <FormControl nodeRef={this.nodeRef}>
+            <InputLabel id={this.props.name}>{this.props.name}</InputLabel>
+            <Select
+              name = {this.props.name + "_"}
+              style={{ margin: "2vh", padding: "1vh 2vh 0vh 1vh" }}
+              labelId={this.props.name}
+              value={this.option}
+              onChange={this.handleChange}
+            >
+              {this.createList()}
+            </Select>
+          </FormControl>
     );
   }
 }
 
 const mapStateToProps = state => {
   return {
-    request: state.migration.request
+    request: state.migration.request,
   };
 };
 

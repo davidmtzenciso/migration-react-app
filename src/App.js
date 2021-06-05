@@ -2,17 +2,21 @@ import React from 'react';
 import Migration from './features/migration/components/Migration';
 import store from './app/store';
 import { Provider } from 'react-redux';
-
+import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { AppBar, IconButton, Button, Typography, Toolbar, withStyles } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import { styles } from './styles';
 
 class App extends React.Component {
+  construct(props) {
+    this.nodeRef = React.createRef();
+  }
 
   render() {
     return (
-        <div>
-          <AppBar position="static">
+      <Router>
+        <div ref={this.nodeRef}>
+          <AppBar nodeRef={this.nodeRef} position="static">
             <Toolbar>
               <IconButton edge="start" className={this.props.classes.menuButton} color="inherit" aria-label="menu">
                 <MenuIcon />
@@ -23,12 +27,17 @@ class App extends React.Component {
               <Button color="inherit">Promote</Button>
             </Toolbar>
           </AppBar>
-          <div>
+          <div ref={this.nodeRef}>
+          <Switch>
             <Provider store={store}>
-              <Migration />
+              <Route path="/" component={Migration}/>
+              <Route path="/migration" component={Migration}/>
             </Provider>
+          </Switch>
+
           </div>
         </div>
+      </Router>
     );
   }
 }

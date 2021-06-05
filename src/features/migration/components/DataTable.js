@@ -14,8 +14,11 @@ class DataTable extends React.Component {
 
   constructor(props) {
     super(props);
+    console.log("datatable creation----");
+    this.wrapper = React.createRef();
     this.request = this.props.request;
     this.metadata = this.props.metadata;
+    console.log("datatable.........................");
     this.name = this.props.name;
     this.rows = []
     this.order = "asc";
@@ -144,6 +147,7 @@ class DataTable extends React.Component {
 
 
   render() {
+    console.log("building table");
     return (
           <TableContainer spacing={1} component={Paper}>
             <Table className={this.props.classes.table} aria-label="simple table">
@@ -207,7 +211,6 @@ const mapStateToProps = state => {
 };
 
 const dispatchMapToAction = {
-  set_metadata: createAction("migration/set_metadata"),
 };
 
 export default compose(

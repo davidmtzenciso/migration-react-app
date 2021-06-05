@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk  } from '@reduxjs/toolkit';
 import { fetch_metadata } from './api';
 import { initState } from './initState';
+
+
 export const get_metadata = createAsyncThunk("migration/get-metadata", async (payload, { dispatch }) => {
   const response = await fetch_metadata()
   return response;
 });
-
 
 export const migrationSlice = createSlice({
   name: 'migration',
@@ -23,7 +24,6 @@ export const migrationSlice = createSlice({
           state.request.from = action.payload.value;
           break;
         case "to":
-        console.log("enter case 'to'");
           state.request.to = action.payload.value;
           break;
         default:
@@ -31,7 +31,7 @@ export const migrationSlice = createSlice({
       }
     },
     evaluate_duplicated_pod: (state, action) => {
-      console.log("evaluate duplicated_pod-------- " + action.payload.componentName);
+      console.log("evaluate duplicated_pod-------- " + JSON.stringify(action.payload));
         if(state.request.from === state.request.to) {
             console.log("it is duplicated!");
             state.request.error = {
@@ -45,15 +45,26 @@ export const migrationSlice = createSlice({
           console.log("no error---------");
           state.request.error = state.noError;
         }
+    },
+    evaluate_table_doble_selection: (state, action) => {
+      
     }
   },
   extraReducers: {
+    [get_metadata.pending]: (state, action) => {
+      state.loaded = false;
+    },
     [get_metadata.fulfilled]: (state, action) => {
-      state.metadata = action.payload
+      state.loaded = true;
+      const metadata = action.payload;
+      metadata.schemas["xproduct"]._ = [];
+      metadata.schemas["cost"]._ = [];
+      state.metadata = metadata;
     },
     [get_metadata.rejected]: (state, action) => {
+      state.loaded = false;
       console.log("metadata error: " + action.error.message);
-      state.ApiError.message = action.error.message
+      state.ApiError.message = action.error.message;
     }
   }
 });
