@@ -12,25 +12,26 @@ class SelectOption extends React.Component {
     super(props);
     console.log("select option creation.......");
     this.nodeRef = React.createRef();
-    this.request = props.request;
     this.metadata = props.metadata;
-    this.setOption();
+
     this.handleChange = (event) => {
         this.props.selectPodOrTable({
             key: this.props.name,
             value: event.target.value
         });
+        this.props.evaluateSelection({key: this.props.name, value: this.option});
       }
-      this.props.evaluateDuplicatedPod({componentName: this.name});
     }
+
+
 
    setOption() {
      if(this.props.name === 'from') {
-       this.option = this.request.from;
+       this.option = this.props.request.from;
      } else if (this.props.name === 'to') {
-       this.option = this.request.to;
-     } else if (this.props.name === this.request.schema) {
-       this.option = "client_confgr"
+       this.option = this.props.request.to;
+     } else if (this.props.name === this.props.request.schema){
+       this.option = this.props.request.tableName;
      } else {
        this.option = "_";
      }
@@ -45,6 +46,7 @@ class SelectOption extends React.Component {
   }
 
   render() {
+      this.setOption();
       return (
           <FormControl nodeRef={this.nodeRef}>
             <InputLabel id={this.props.name}>{this.props.name}</InputLabel>
@@ -70,7 +72,7 @@ const mapStateToProps = state => {
 
 const dispatchMapToAction = {
   selectPodOrTable: createAction("migration/select_pod_or_table"),
-  evaluateDuplicatedPod: createAction("migration/evaluate_duplicated_pod")
+  evaluateSelection: createAction("migration/evaluate_pod_selection"),
 };
 
 

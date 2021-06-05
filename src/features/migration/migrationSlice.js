@@ -15,7 +15,7 @@ export const migrationSlice = createSlice({
     select_pod_or_table: (state, action) => {
       console.log("select_pod_or_table: " + action.payload.key + ":" + action.payload.value);
       switch(action.payload.key) {
-        case "xprod":
+        case "xproduct":
         case "cost":
           state.request.schema = action.payload.key;
           state.request.tableName = action.payload.value;
@@ -30,12 +30,12 @@ export const migrationSlice = createSlice({
           console.log("error in select_pod_n_table reducer, no case for option: " + action.payload.key);
       }
     },
-    evaluate_duplicated_pod: (state, action) => {
-      console.log("evaluate duplicated_pod-------- " + JSON.stringify(action.payload));
+    evaluate_pod_selection: (state, action) => {
+      console.log("evaluate pod selection-------- " + JSON.stringify(action.payload));
         if(state.request.from === state.request.to) {
-            console.log("it is duplicated!");
+            console.log("pod is duplicated!");
             state.request.error = {
-              componentName: action.payload.componentName,
+              componentName: action.payload.key,
               type: "duplicated_pod",
               message: "'From' and 'To' cannot be the same pod",
               isNotFixed: true
@@ -46,9 +46,6 @@ export const migrationSlice = createSlice({
           state.request.error = state.noError;
         }
     },
-    evaluate_table_doble_selection: (state, action) => {
-      
-    }
   },
   extraReducers: {
     [get_metadata.pending]: (state, action) => {
@@ -57,6 +54,7 @@ export const migrationSlice = createSlice({
     [get_metadata.fulfilled]: (state, action) => {
       state.loaded = true;
       const metadata = action.payload;
+      metadata.pods.push("_");
       metadata.schemas["xproduct"]._ = [];
       metadata.schemas["cost"]._ = [];
       state.metadata = metadata;

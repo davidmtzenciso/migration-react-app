@@ -8,7 +8,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { styles } from './styles';
 
 import SelectOption from './SelectOption';
-//import DataTable from './DataTable';
+import DataTable from './DataTable';
 import { get_metadata } from '.././migrationSlice';
 
 class Migration extends React.Component {
@@ -16,21 +16,11 @@ class Migration extends React.Component {
     super(props);
     this.wrapper = React.createRef();
     this.pods = this.props.metadata.pods;
-    this.componentName = this.props.request.error.componentName;
-    this.open = this.props.request.error.isNotFixed;
     this.message = this.props.request.error.message;
     this.metadata = this.props.metadata;
     this.getMetadata = this.props.getMetadata;
     this.isLoaded = this.props.isLoaded;
 
-    this.handleClose = (event) => {
-      console.log("component with error: " + this.componentName)
-      this.props.selectPodOrTable({
-        key: this.componentName,
-        value: "not_selected"
-      });
-      this.props.evaluateDuplicatedPod({componentName: this.componentName});
-    }
   }
 
   componentDidMount() {
@@ -53,20 +43,20 @@ class Migration extends React.Component {
            </Paper>
           </Grid>
           <Grid key = "tables_container" container spacing={1}>
-            <Grid key="tables_from" item xs={6}>
-              <Paper className={this.props.classes.paper}>
-                <DataTable name = "data_from"/>
-              </Paper>
-            </Grid>
-            <Grid key="tables_to" item xs={6}>
-              <Paper className={this.props.classes.paper}>
-                <DataTable name = "data_to"/>
-              </Paper>
-            </Grid>
+          <Grid key="tables_from" item xs={6}>
+            <Paper className={this.props.classes.paper}>
+              <DataTable name = "data_from"/>
+            </Paper>
           </Grid>
-          <Snackbar open={this.open} autoHideDuration={3000} onClose={this.handleClose}>
-            <MuiAlert elevation={6} onClose={this.handleClose} variant="filled"  severity="error">
-              {this.message}
+          <Grid key="tables_to" item xs={6}>
+            <Paper className={this.props.classes.paper}>
+              <DataTable name = "data_to"/>
+            </Paper>
+          </Grid>
+        </Grid>
+          <Snackbar open={this.props.request.error.isNotFixed} autoHideDuration={3000} >
+            <MuiAlert elevation={6} variant="filled"  severity="error">
+              {this.props.request.error.message}
             </MuiAlert>
           </Snackbar>
         </div>
@@ -93,8 +83,6 @@ const mapStateToProps = state => {
 };
 
 const dispatchMapToAction = {
-  evaluateDuplicatedPod: createAction("migration/evaluate_duplicated_pod"),
-  selectPodOrTable: createAction("migration/select_pod_or_table"),
   getMetadata: get_metadata
 };
 
