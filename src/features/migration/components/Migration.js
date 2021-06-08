@@ -5,11 +5,13 @@ import { createAction } from '@reduxjs/toolkit';
 
 import { MuiThemeProvider, Snackbar, Grid, GridList, Paper, Box } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import { spacing } from '@material-ui/system';
 import MuiAlert from '@material-ui/lab/Alert';
 import { styles } from './styles';
 
 import SelectOption from './SelectOption';
 import DataTable from './DataTable';
+import ReadQueryFields from './ReadQueryFields';
 import { get_metadata } from '.././migrationSlice';
 
 class Migration extends React.Component {
@@ -32,26 +34,31 @@ class Migration extends React.Component {
     if (this.props.isLoaded) {
       return (
           <div ref={this.wrapper} className={this.props.classes.root}>
-          <Grid item xs={12} >
-           <Paper noderef={this.wrapper} className={this.props.classes.paper} elevation={2} >
-             <Box noderef={this.wrapper} className={this.props.classes.box} component="span">
-              <SelectOption noderef={this.wrapper} name="from" options={this.props.metadata.pods}/>
-              <SelectOption noderef={this.wrapper} name="to" options={this.props.metadata.pods}/>
-              <SelectOption noderef={this.wrapper} name="xproduct" options={Object.keys(this.props.metadata.schemas["xproduct"])}/>
-              <SelectOption noderef={this.wrapper} name="cost" options={Object.keys(this.props.metadata.schemas["cost"])}/>
-             </Box>
-           </Paper>
+          <Grid noderef={this.wrapper}>
+            <Grid item xs={12} >
+             <Paper noderef={this.wrapper} className={this.props.classes.paper} elevation={2} >
+               <Box noderef={this.wrapper} className={this.props.classes.box} component="span">
+                <SelectOption noderef={this.wrapper} name="from" options={this.props.metadata.pods}/>
+                <SelectOption noderef={this.wrapper} name="to" options={this.props.metadata.pods}/>
+                <SelectOption noderef={this.wrapper} name="xproduct" options={Object.keys(this.props.metadata.schemas["xproduct"])}/>
+                <SelectOption noderef={this.wrapper} name="cost" options={Object.keys(this.props.metadata.schemas["cost"])}/>
+               </Box>
+             </Paper>
+            </Grid>
+            <Grid noderef={this.wrapper}>
+            <ReadQueryFields />
+            </Grid>
+            <Grid key="tables_from" item xs={12} className={this.props.classes.table} >
+                <Paper className={this.props.classes.paper} >
+                  <DataTable noderef={this.wrapper} name = "data_from"/>
+                </Paper>
+              </Grid>
+              <Grid key="tables_to" item xs={12} className={this.props.classes.table} >
+                <Paper className={this.props.classes.paper}>
+                  <DataTable noderef={this.wrapper} name = "data_to"/>
+                </Paper>
+            </Grid>
           </Grid>
-        <Grid key="tables_from" item xs={12}>
-            <Paper className={this.props.classes.paper}>
-              <DataTable noderef={this.wrapper} name = "data_from"/>
-            </Paper>
-          </Grid>
-          <Grid key="tables_to" item xs={12}>
-            <Paper className={this.props.classes.paper}>
-              <DataTable noderef={this.wrapper} name = "data_to"/>
-            </Paper>
-        </Grid>
           <Snackbar open={this.props.request.error.isNotFixed} autoHideDuration={3000} >
             <MuiAlert elevation={6} variant="filled"  severity="error">
               {this.props.request.error.message}

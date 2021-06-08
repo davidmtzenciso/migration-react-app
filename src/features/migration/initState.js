@@ -39,7 +39,14 @@ export const initState = {
     to: "prodqa",
     schema: "xproduct",
     tableName: "client_confgr",
-    ops:[{
+    readConditions: [{
+      condition: {
+          column: "",
+          value: ""
+      },
+      builtQuery: ""
+    }],
+    modifications:[{
       name: "",
       findArgs: [{
         columnName: "",

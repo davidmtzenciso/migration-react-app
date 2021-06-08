@@ -42,10 +42,30 @@ export const migrationSlice = createSlice({
             };
         }
         else {
-          console.log("no error---------");
+          console.log("no error in pod selection---------");
           state.request.error = state.noError;
         }
     },
+    set_reading_conditions: (state, action) => {
+      console.log("condition: " + JSON.stringify(action.payload));
+      const newCondition = {
+        column: action.payload.column,
+        value: action.payload.value
+      };
+      if ( action.payload.instruction === "add") {
+        const existing = state.request.readConditions.find(condition => condition.column === newCondition.column);
+        if(existing) {
+          existing.value = newCondition.value;
+        } else {
+          state.request.readConditions.push(newCondition);
+        }
+      } else if ( action.payload.instruction === "remove") {
+        state.request.readConditions = state.request.readConditions.filter(condition => condition.column !== newCondition.column);
+      } else {
+        console.log("error, instruction not registered in set_reading_conditions reducer");
+      }
+      console.log("conditions: " + JSON.stringify(state.request.readConditions));
+    }
   },
   extraReducers: {
     [get_metadata.pending]: (state, action) => {

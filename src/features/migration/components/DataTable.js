@@ -33,7 +33,7 @@ class DataTable extends React.Component {
     this.request = this.props.request;
     this.metadata = this.props.metadata;
     this.name = this.props.name;
-    this.rows = []
+    this.rows = this.createRows();
     this.order = "asc";
     this.orderBy = "";
     this.selected = [];
@@ -55,7 +55,7 @@ class DataTable extends React.Component {
 
   createHandlers() {
     this.sortHandler = (property) => (event) => {
-      this.onRequestSort(event, property);
+      this.handleRequestSort(event, property);
     };
 
     this.handleRequestSort = (event, property) => {
@@ -133,28 +133,40 @@ class DataTable extends React.Component {
   }
 
   createHeadCells() {
-    //{ id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)' },
     const schema = this.props.metadata.schemas[this.props.request.schema];
-    const table_meta = schema[this.props.request.tableName];
-    console.log("table_meta: " + table_meta);
-    return table_meta.map(column => {
+    const tableName = this.props.request.tableName;
+    const tableMeta = schema[tableName];
+
+    return tableMeta.map((column, index) => {
         return {
-          id: this.props.name + column, label: column,  numeric: false
+          id: schema + tableName + column + index, label: column,  numeric: false, tableName: tableName
         }
     });
   }
 
   createRows() {
     return [{
-      table_name: "client_confgr", client_confgr_id: "1", client_id:"1234", product_id:"HEALTHSPARQ", confgr_key: "promo_box_1"
+      client_confgr_id: "1", client_id:"1234", product_id:"HEALTHSPARQ", confgr_key: "promo_box_1"
     }];
+  }
+
+  createRowElements() {
+    const schema = this.props.metadata.schemas[this.props.request.schema];
+    const tableName = this.props.request.tableName;
+
+    return this.rows.map((row, index) => (
+      <TableRow key = {schema + tableName + index}>
+      { Object.values(row).map((val) => (
+        <TableCell align="right">{val}</TableCell>))}
+      </TableRow>
+    ));
   }
 
 
   render() {
     this.setData();
     return (
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} >
             <Table id={this.props.name} className={this.props.classes.table} aria-label="simple table">
               <TableHead>
                 <TableRow key={this.props.name + "_heads"} >
@@ -163,9 +175,9 @@ class DataTable extends React.Component {
                       key={headCell.id}
                       align={headCell.numeric ? 'right' : 'left'}
                       padding="checkbox"
-                      sortDirection={this.orderBy === headCell.id ? this.order : false}
+                      sortDirection={this.orderBy === headCell.tableName + "_+id" ? this.order : false}
                     >
-                      <TableSortLabel key={this.props.name + "_sort_label"}
+                      <TableSortLabel key={headCell.id + "_sort_label"}
                         active={this.orderBy === headCell.id}
                         direction={this.orderBy === headCell.id ? this.order : 'asc'}
                         onClick={this.sortHandler(headCell.id)}
@@ -177,28 +189,18 @@ class DataTable extends React.Component {
                           </span>
                         ) : null}
                       </TableSortLabel>
-                      <Checkbox key={this.props.name + "_checkbox"}
+                      <Checkbox key={headCell.id + "_checkbox"}
                         indeterminate={this.numSelected > 0 && this.numSelected < this.rowCount}
                         checked={this.rowCount > 0 && this.numSelected === this.rowCount}
                         onChange={this.onSelectAllClick}
-                        inputProps={{ 'aria-label': 'select all desserts' }}
+                        inputProps={{ 'aria-label': 'select all query fields' }}
                       />
                     </TableCell>
                   ))}
                 </TableRow>
               </TableHead>
-              <TableBody key = { this.name + "_" + this.data.tableName }>
-                { this.createRows().map((row, index) => (
-                  <TableRow key = {this.data.tableName + index}>
-                    <TableCell component="th" scope="row">
-                      {row.table_name}
-                    </TableCell>
-                    <TableCell align="right">{row.client_confgr_id}</TableCell>
-                    <TableCell align="right">{row.client_id}</TableCell>
-                    <TableCell align="right">{row.product_id}</TableCell>
-                    <TableCell align="right">{row.confgr_key}</TableCell>
-                  </TableRow>
-                ))}
+              <TableBody key = { this.name + "_" + this.data.tableName + "_data" }>
+                { this.createRowElements()}
               </TableBody>
             </Table>
           </TableContainer>
