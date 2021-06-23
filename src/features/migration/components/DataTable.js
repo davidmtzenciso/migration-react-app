@@ -33,24 +33,13 @@ class DataTable extends React.Component {
     this.request = this.props.request;
     this.metadata = this.props.metadata;
     this.name = this.props.name;
-    this.rows = this.createRows();
     this.order = "asc";
     this.orderBy = "";
     this.selected = [];
     this.page = 0;
     this.rowsPerPage = 10;
+    this.tableName = "";
     this.createHandlers();
-  }
-
-  setData() {
-    if(this.name === "data_from") {
-      this.data = this.props.dataFrom;
-    } else if(this.name === "data_to") {
-      this.data = this.props.dataTo;
-    } else {
-      this.data = null;
-      console.log("prop name value not recognized: " + this.name);
-    }
   }
 
   createHandlers() {
@@ -66,7 +55,7 @@ class DataTable extends React.Component {
 
   this.handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      this.selected = this.rows.map((n) => n.name);
+      this.selected = [];//this.queryResult.map((n) => n.name);
     } else {
      this.selected = [];
     }
@@ -102,7 +91,9 @@ class DataTable extends React.Component {
   };
 
   this.isSelected = (name) => this.selected.indexOf(name) !== -1;
-  this.emptyRows = this.rowsPerPage - Math.min(this.rowsPerPage, this.rows.length - this.page * this.rowsPerPage);
+  const pod = this.props.request[this.props.name];
+  const tableName = this.props.request.tableName;
+  this.emptyRows = this.rowsPerPage - Math.min(this.rowsPerPage, this.props.queryResults[tableName].data[pod].length - this.page * this.rowsPerPage);
 
   }
 
@@ -135,36 +126,38 @@ class DataTable extends React.Component {
   createHeadCells() {
     const schema = this.props.metadata.schemas[this.props.request.schema];
     const tableName = this.props.request.tableName;
+    this.tableName = tableName;
     const tableMeta = schema[tableName];
 
     return tableMeta.map((column, index) => {
         return {
-          id: schema + tableName + column + index, label: column,  numeric: false, tableName: tableName
+          id: schema + tableName + column + index, label: column, tableName: tableName
         }
     });
-  }
-
-  createRows() {
-    return [{
-      client_confgr_id: "1", client_id:"1234", product_id:"HEALTHSPARQ", confgr_key: "promo_box_1"
-    }];
   }
 
   createRowElements() {
     const schema = this.props.metadata.schemas[this.props.request.schema];
     const tableName = this.props.request.tableName;
+    const pod = this.props.request[this.props.name];
+    let data;
+    
+    try {
+      data = this.props.queryResults[tableName].data[pod];
+    } catch (error) {
+      data = [];
+    }
 
-    return this.rows.map((row, index) => (
+    return data.map((row, index) => (
       <TableRow key = {schema + tableName + index}>
       { Object.values(row).map((val) => (
-        <TableCell align="right">{val}</TableCell>))}
+        <TableCell align="left">{val}</TableCell>))}
       </TableRow>
     ));
   }
 
 
   render() {
-    this.setData();
     return (
           <TableContainer component={Paper} >
             <Table id={this.props.name} className={this.props.classes.table} aria-label="simple table">
@@ -173,7 +166,7 @@ class DataTable extends React.Component {
                   {this.createHeadCells().map((headCell) => (
                     <TableCell
                       key={headCell.id}
-                      align={headCell.numeric ? 'right' : 'left'}
+                      align='left'
                       padding="checkbox"
                       sortDirection={this.orderBy === headCell.tableName + "_+id" ? this.order : false}
                     >
@@ -199,7 +192,7 @@ class DataTable extends React.Component {
                   ))}
                 </TableRow>
               </TableHead>
-              <TableBody key = { this.name + "_" + this.data.tableName + "_data" }>
+              <TableBody key = { this.name + "_" + this.tableName + "_data" }>
                 { this.createRowElements()}
               </TableBody>
             </Table>
@@ -212,8 +205,7 @@ const mapStateToProps = state => {
   return {
     metadata: state.migration.metadata,
     request: state.migration.request,
-    dataFrom: state.migration.dataFrom,
-    dataTo: state.migration.dataTo
+    queryResults: state.migration.queryResults
   };
 };
 

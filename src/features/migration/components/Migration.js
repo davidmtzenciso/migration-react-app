@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createAction } from '@reduxjs/toolkit';
 
-import { MuiThemeProvider, Snackbar, Grid, GridList, Paper, Box } from '@material-ui/core';
+import { MuiThemeProvider, Snackbar, Grid, GridList, Paper, Box, Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { spacing } from '@material-ui/system';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -12,7 +12,7 @@ import { styles } from './styles';
 import SelectOption from './SelectOption';
 import DataTable from './DataTable';
 import ReadQueryFields from './ReadQueryFields';
-import { get_metadata } from '.././migrationSlice';
+import { get_metadata, send_query } from '.././migrationSlice';
 
 class Migration extends React.Component {
   constructor(props) {
@@ -23,6 +23,10 @@ class Migration extends React.Component {
     this.metadata = this.props.metadata;
     this.getMetadata = this.props.getMetadata;
     this.isLoaded = this.props.isLoaded;
+
+    this.onGetDataClicked = (event) => {
+      this.props.sendQuery()
+    };
 
   }
 
@@ -42,6 +46,7 @@ class Migration extends React.Component {
                 <SelectOption noderef={this.wrapper} name="to" options={this.props.metadata.pods}/>
                 <SelectOption noderef={this.wrapper} name="xproduct" options={Object.keys(this.props.metadata.schemas["xproduct"])}/>
                 <SelectOption noderef={this.wrapper} name="cost" options={Object.keys(this.props.metadata.schemas["cost"])}/>
+                <Button  variant="contained" color="primary"   justify="center" onClick={this.onGetDataClicked}>Get Data</Button>
                </Box>
              </Paper>
             </Grid>
@@ -50,12 +55,12 @@ class Migration extends React.Component {
             </Grid>
             <Grid key="tables_from" item xs={12} className={this.props.classes.table} >
                 <Paper className={this.props.classes.paper} >
-                  <DataTable noderef={this.wrapper} name = "data_from"/>
+                  <DataTable noderef={this.wrapper} name = "from"/>
                 </Paper>
               </Grid>
               <Grid key="tables_to" item xs={12} className={this.props.classes.table} >
                 <Paper className={this.props.classes.paper}>
-                  <DataTable noderef={this.wrapper} name = "data_to"/>
+                  <DataTable noderef={this.wrapper} name = "to"/>
                 </Paper>
             </Grid>
           </Grid>
@@ -87,7 +92,8 @@ const mapStateToProps = state => {
 };
 
 const dispatchMapToAction = {
-  getMetadata: get_metadata
+  getMetadata: get_metadata,
+  sendQuery: send_query
 };
 
 export default compose(

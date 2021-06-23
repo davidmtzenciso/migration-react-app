@@ -23,5 +23,8 @@ export const styles = theme => ({
   },
   table: {
 
+  },
+  getData: {
+    justifyContent: 'center'
   }
 });

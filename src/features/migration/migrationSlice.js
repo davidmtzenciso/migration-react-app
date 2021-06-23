@@ -1,9 +1,24 @@
 import { createSlice, createAsyncThunk  } from '@reduxjs/toolkit';
-import { fetch_metadata } from './api';
+import { fetch_metadata, post_query} from './api';
 import { initState } from './initState';
 
 
-export const get_metadata = createAsyncThunk("migration/get-metadata", async (payload, { dispatch }) => {
+export const send_query = createAsyncThunk("migration/post_query", async (payload, { dispatch, getState }) => {
+  const state = getState();
+  const queryData = {
+    from: state.migration.request.from,
+    to: state.migration.request.to,
+    schema: state.migration.request.schema,
+    tableName: state.migration.request.tableName,
+    conditions: state.migration.request.readConditions,
+  };
+  console.log("payload for post_query: " + JSON.stringify(queryData));
+  const response = await post_query(JSON.stringify(queryData))
+  return response;
+});
+
+
+export const get_metadata = createAsyncThunk("migration/get_metadata", async (payload, { dispatch }) => {
   const response = await fetch_metadata()
   return response;
 });
@@ -19,6 +34,7 @@ export const migrationSlice = createSlice({
         case "cost":
           state.request.schema = action.payload.key;
           state.request.tableName = action.payload.value;
+          state.request.readingConditions = [];
           break;
         case "from":
           state.request.from = action.payload.value;
@@ -47,10 +63,8 @@ export const migrationSlice = createSlice({
         }
     },
     set_reading_conditions: (state, action) => {
-      console.log("condition: " + JSON.stringify(action.payload));
       const newCondition = {
-        column: action.payload.column,
-        value: action.payload.value
+        [action.payload.column] : action.payload.value
       };
       if ( action.payload.instruction === "add") {
         const existing = state.request.readConditions.find(condition => condition.column === newCondition.column);
@@ -64,7 +78,7 @@ export const migrationSlice = createSlice({
       } else {
         console.log("error, instruction not registered in set_reading_conditions reducer");
       }
-      console.log("conditions: " + JSON.stringify(state.request.readConditions));
+      console.log("reading conditions: " + state.request.readConditions);
     }
   },
   extraReducers: {
@@ -83,7 +97,19 @@ export const migrationSlice = createSlice({
       state.loaded = false;
       console.log("metadata error: " + action.error.message);
       state.ApiError.message = action.error.message;
-    }
+    },
+    [send_query.pending]: (state, action) => {
+
+    },
+    [send_query.fulfilled]: (state, action) => {
+      console.log("query result: " + JSON.stringify(action.payload))
+      const tableName = action.payload.tableName;
+      state.queryResults[tableName] = action.payload;
+      state.request.conditions = [];
+    },
+    [send_query.rejected]: (state, action) => {
+      console.log("post_query error: " + action.error.message);
+    },
   }
 });
 

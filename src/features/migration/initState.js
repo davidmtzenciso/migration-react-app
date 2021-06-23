@@ -4,23 +4,14 @@ export const initState = {
     pods: [],
     schemas: []
   },
-  dataFrom:{
-    pod: "dev5",
-    schema: "xproduct",
-    tableName: "client_confgr",
-    columns:[{
-      name: "",
-      values: []
-    }]
-  },
-  dataTo:{
-    pod: "prodqa",
-    schema: "xproduct",
-    tableName: "client_confgr",
-    columns:[{
-      name: "",
-      values: []
-    }]
+  queryResults: {
+      "client_confgr": {
+        schema: "xproduct",
+        tableName: "client_confgr",
+        columns: [],
+        sql:[],
+        data: { "dev5": [], "bcbsasb3":[] }
+      }
   },
   noError: {
     componentName: "none",
@@ -36,16 +27,10 @@ export const initState = {
       isNotFixed: false,
     },
     from: "dev5",
-    to: "prodqa",
+    to: "bcbsasb3",
     schema: "xproduct",
     tableName: "client_confgr",
-    readConditions: [{
-      condition: {
-          column: "",
-          value: ""
-      },
-      builtQuery: ""
-    }],
+    readConditions: [],
     modifications:[{
       name: "",
       findArgs: [{

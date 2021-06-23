@@ -29,7 +29,7 @@ class ReadQueryFields extends React.Component {
     const schema = this.props.request.schema;
 
     return this.props.metadata.schemas[schema][tableName].map((column) => (
-      <TextField key={schema + tableName + column} name={column} label={column} variant="outlined" onChange={this.handleChange} />
+      <TextField id="outlined-basic" key={schema + tableName + column} name={column} label={column} variant="outlined" onChange={this.handleChange} />
     ));
   }
 
