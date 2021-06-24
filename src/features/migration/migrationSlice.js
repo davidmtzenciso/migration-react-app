@@ -79,7 +79,20 @@ export const migrationSlice = createSlice({
         console.log("error, instruction not registered in set_reading_conditions reducer");
       }
       console.log("reading conditions: " + state.request.readConditions);
-    }
+    },
+    register_subquery: (state, action) => {
+      console.log("register subquery....." +JSON.stringify(action.payload));
+      const subqueries = state.request.readConditions.subqueries;
+      if (action.payload.instruction === "add") {
+        const newSubquery = {
+          [action.payload.column] : []
+        };
+        subqueries.push(newSubquery);
+      } else if (action.payload.instruction === "remove") {
+        state.request.readConditions.subqueries = subqueries.filter(query => query[action.payload.column] !== undefined);
+      }
+      console.log("subqueries registered: " + JSON.stringify(state.request.readConditions.subqueries));
+    },
   },
   extraReducers: {
     [get_metadata.pending]: (state, action) => {

@@ -50,8 +50,8 @@ class Migration extends React.Component {
                </Box>
              </Paper>
             </Grid>
-            <Grid noderef={this.wrapper}>
-            <ReadQueryFields />
+            <Grid noderef={this.wrapper} container>
+            <ReadQueryFields subQueries={[]}/>
             </Grid>
             <Grid key="tables_from" item xs={12} className={this.props.classes.table} >
                 <Paper className={this.props.classes.paper} >

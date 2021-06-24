@@ -30,7 +30,10 @@ export const initState = {
     to: "bcbsasb3",
     schema: "xproduct",
     tableName: "client_confgr",
-    readConditions: [],
+    readConditions: {
+      conditions: [],
+      subqueries:[]
+    },
     modifications:[{
       name: "",
       findArgs: [{
